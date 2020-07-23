@@ -1,0 +1,72 @@
+.App {
+  text-align: center;
+}
+
+.Game {
+  display: flex;
+  margin: 1rem;
+}
+
+.Players {
+  flex: 0;
+  margin: 0 2rem 0 0;
+  padding: 0;
+  list-style-type: none;
+  display: table;
+}
+
+.Players .Player {
+  margin: 0;
+  padding: 0;
+  display: table-row;
+}
+
+.Players .Player.myself {
+  color: #999;
+}
+.Players .Player.current {
+  font-weight: bolder;
+  background: #ddd;
+}
+
+.Players .Player strong,
+.Players .Player em,
+.Players .Player code {
+  display: table-cell;
+  padding: 0.5rem;
+}
+
+.Grid {
+  margin: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.Grid .GridRow {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+}
+
+.Grid .GridRow .GridCell {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid #ccc;
+}
+
+.Winner {
+  opacity: 0;
+  transition: opacity ease-in-out 3s;
+  font-weight: bold;
+}
+
+.Winner.visible {
+  opacity: 1;
+}

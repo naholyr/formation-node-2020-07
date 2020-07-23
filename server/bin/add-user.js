@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const { add_user } = require('../lib/db');
-const chalk = require('chalk');
+const { add_user } = require("../lib/db");
+const chalk = require("chalk");
 
 // Usage: node add-user <username> <password>
 // TODO use https://www.npmjs.com/package/commander
@@ -11,12 +11,12 @@ if (process.argv.length !== 4) {
 } else {
   const [, , username, password] = process.argv;
   add_user(username, password)
-    .then(p => {
+    .then((p) => {
       console.log(chalk.green("✅ User added!"));
       process.exit(0);
     })
-    .catch(e => {
+    .catch((e) => {
       console.log(e, chalk.red.bold("Failed!"));
       process.exit(1);
-    })
+    });
 }
