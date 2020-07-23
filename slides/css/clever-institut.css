@@ -1,0 +1,58 @@
+@media print {
+
+  body {
+    counter-reset: slide;
+  }
+
+  section.slide {
+    counter-increment: slide;
+  }
+
+  section.slide:after {
+    content: "Node.js - 28-30 janv. 2015" " [#" counter(slide) "] ";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding-right: 80px;
+    color: #ccc;
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  section.slide {
+    background-image: url(../images/clever-institut.png);
+    background-size: 78px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+  }
+
+}
+
+@media screen {
+
+  body {
+    background-image: url(../images/clever-institut.png);
+    background-size: 200px;
+    background-repeat: no-repeat;
+    background-position: left 40px bottom 80px;
+  }
+
+  body:after {
+    content: "Node.js - 28-30 janv. 2015";
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    font-size: 20px;
+    color: #ddd;
+    font-weight: bold;
+  }
+
+  body.notes-popup {
+    background-image: none;
+  }
+
+  body.notes-popup:after {
+    content: "";
+  }
+
+}

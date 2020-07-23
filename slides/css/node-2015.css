@@ -1,0 +1,69 @@
+@media print {
+  .print-warning {
+    display: none;
+  }
+}
+
+.reveal {
+  font-size: 36px;
+}
+
+.reveal code {
+  background: rgba(200, 200, 200, 0.3);
+  font-family: monospace;
+}
+
+.reveal pre {
+  border: 1px solid #ccc;
+}
+.reveal pre code {
+  background: white;
+  color: black;
+}
+
+.reveal pre.stretch {
+  width: 80% !important;
+  left: 50% !important;
+  margin-left: -40% !important;
+  font-size: 0.9em;
+}
+
+.reveal .cleartext * {
+  color: white;
+}
+.reveal .cleartext a {
+  color: #ccccff;
+}
+
+.reveal .raw img {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.screen {
+  display: initial;
+}
+.print {
+  display: none;
+}
+
+.print-pdf .reveal .cleartext * {
+  color: black;
+}
+.print-pdf .reveal .cleartext a {
+  color: #333366;
+}
+.print-pdf .screen {
+  display: none;
+}
+.print-pdf .print {
+  display: initial;
+}
+
+
+/* fix margins of lists followed by title */
+.reveal ul+h1, .reveal ul+h2, .reveal ul+h3, .reveal ul+h4, .reveal ul+h5, .reveal ul+h6,
+.reveal ol+h1, .reveal ol+h2, .reveal ol+h3, .reveal ol+h4, .reveal ol+h5, .reveal ol+h6 {
+  margin-top: 20px;
+}

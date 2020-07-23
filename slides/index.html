@@ -1,0 +1,1564 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Node.js</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/beige.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="css/highlight/styles/docco.css" id="highlight-theme">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <link rel="stylesheet" href="css/node-2015.css">
+
+  </head>
+
+  <body>
+
+    <div class="reveal">
+      <div class="slides"><section id="intro" class="cleartext slide" data-background="images/nodejs.png">
+<h1 class="print">Node.js</h1>
+
+<h2>Applications temps réel et performantes</h2>
+</section>
+<section id="plan" class="slide">
+<h2>Plan (théorique)</h2><ul>
+<li>Jour 1 : <strong>Node et son écosystème</strong><ul>
+<li><a href="#/presentation">Présentation</a></li>
+<li><a href="#/modules-et-npm">Modules et npm</a></li>
+<li><a href="#/api-asynchrones">Le paradigme asynchrone</a></li>
+</ul>
+</li>
+<li>Jour 2 : <strong>Application web</strong><ul>
+<li><a href="#/http">HTTP</a> avec <a href="#/express">Express</a></li>
+<li><a href="#/bases-de-donnees">Bases de données</a></li>
+<li><a href="#/tests-unitaires">Tests unitaires</a></li>
+</ul>
+</li>
+<li>Jour 3 : <strong>Utilisation avancée</strong><ul>
+<li><a href="#/configuration">Configuration</a></li>
+<li><a href="#/websockets">WebSockets</a></li>
+<li><a href="#/qualite">Qualité</a> et <a href="#/performances">Performances</a></li>
+</ul>
+</li>
+</ul>
+</section>
+<section>
+<section id="presentation" class="slide cover"><h1>Présentation</h1></section><section id="presentation-javascript" class="slide" data-background="images/logos/js.png" data-background-size="400px" data-background-repeat="no-repeat" data-background-position="top right">
+<p>Node.js c&#39;est d&#39;abord du…</p>
+<h2>JavaScript</h2><ul>
+<li>Langage de facto du web</li>
+<li><strong>Des inconvénients</strong> :<ul>
+<li>Typage dynamique (conversions hasardeuses)</li>
+<li><a href="https://github.com/byteclubfr/site/blob/readable-in-github/src/blog/this.md#readme"><code>this</code> indomptable</a></li>
+</ul>
+</li>
+<li><strong>De sérieux atouts</strong> :<ul>
+<li>Typage implicite</li>
+<li>Des interpréteurs hyper efficace</li>
+<li>Asynchrone par nature</li>
+<li>Vivant (EcmaScript)</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="presentation-v8" class="slide" data-background="images/logos/v8.png" data-background-size="400px" data-background-repeat="no-repeat" data-background-position="top right">
+<p>Node.js c&#39;est aussi…</p>
+<h2>V8</h2><ul>
+<li>Interpréteur JavaScript de Chrome</li>
+<li>Développé par Google</li>
+<li>Open-source</li>
+<li>Très performant (mais la course reste ouverte)</li>
+</ul><aside class="notes"><p>Les équivalents chez Mozilla sont les monkeys : SpiderMonkey, IonMonkey, JaegerMonkey.
+Trident sur IE, mais qui va laisser la place à Spartan pour la version 12.</p></aside>
+</section>
+<section id="presentation-libuv" class="slide" data-background="images/logos/libuv.png" data-background-size="400px" data-background-repeat="no-repeat" data-background-position="top right">
+<p>Node.js multiplateforme ?</p>
+<h2>libuv</h2><ul>
+<li>Couche d&#39;abstraction en C</li>
+<li>Multi OS</li>
+<li>En charge de l&#39;event loop</li>
+<li>Aussi utilisée hors node (luvit)</li>
+</ul><aside class="notes"><p>Initialement écrite par Bert Belder (membre du TC)
+C&#39;est grâce à cette brique que le support de Windows est possible.</p>
+<p>Précedement:
+epool, kqueue
+libeio, libev, IOCP</p>
+<p>Bientôt utilisée dans neovim.</p></aside>
+</section>
+<section id="presentation-install" class="slide" data-background="images/install_logo.png" data-background-size="400px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>Installer Node.js</h2><ul>
+<li>Niveau système : <a href="http://nodejs.org/download/">Téléchargement sur nodejs.org</a><ul>
+<li>Attention à <code>npm install -g</code></li>
+</ul>
+</li>
+<li>Niveau utilisateur : <a href="https://github.com/creationix/nvm">nvm</a>, <a href="https://github.com/isaacs/nave">nave</a><ul>
+<li>Ne nécessite pas npm ou node pour être installé</li>
+<li>Basculer entre les versions de node</li>
+<li>Pas de permissions privilégiées</li>
+</ul>
+</li>
+<li>Sous Windows : <a href="https://github.com/coreybutler/nvm-windows">nvm-windows</a><ul>
+<li>Attention : <code>nvm install 10.13.0</code> au lieu de <code>nvm install 10</code></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="presentation-version" class="slide">
+<h2><a href="https://github.com/nodejs/Release/blob/master/README.md#nodejs-release-working-group">Node.js Release Working Group</a></h2><p><img src="images/node-schedule.png" alt=""></p>
+<p>Pair = LTS</p>
+</section>
+<section id="presentation-repl" class="slide">
+<h2>Le REPL</h2><pre><code class="lang-sh">node
+</code></pre>
+<p><strong>R</strong>ead, <strong>E</strong>valuate, <strong>P</strong>rint, <strong>L</strong>oop</p>
+<pre><code>&gt; <span class="hljs-number">1</span>+<span class="hljs-number">1</span>
+<span class="hljs-number">2</span>
+&gt; '<span class="hljs-keyword">node</span><span class="hljs-identifier"></span><span class="hljs-title">'.toUpperCase</span>()
+'<span class="hljs-keyword">NODE</span><span class="hljs-identifier"></span><span class="hljs-title">'</span>
+</code></pre><ul>
+<li>Auto-complétion (idéal pour explorer les APIs)</li>
+<li>Les modules du core sont pré-chargés</li>
+<li>Visualiser l&#39;asynchrone</li>
+</ul>
+<pre><code>&gt; <span class="hljs-function"><span class="hljs-title">setImmediate</span><span class="hljs-params">(()</span></span> =&gt; console.<span class="hljs-function"><span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-string">'hello'</span>)</span></span>)
+…
+&gt; hello
+<span class="hljs-number">1</span>+<span class="hljs-number">1</span>
+<span class="hljs-number">2</span>
+</code></pre>
+</section>
+<section id="presentation-exec-fichier" class="slide">
+<h2>Exécuter un script</h2><pre><code class="lang-js"><span class="hljs-comment">// hello-world.js</span>
+
+<span class="hljs-keyword">const</span> world = <span class="hljs-string">'world'</span>;
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Hello, <span class="hljs-subst">${world}</span>`</span>);
+</code></pre>
+<pre><code class="lang-sh">node hello-world.js
+</code></pre>
+<pre><code>Hello, world
+</code></pre>
+</section>
+</section>
+<section>
+<section id="modules-et-npm" class="slide cover"><h1>Modules et npm</h1></section><section id="modules-et-npm-npm" class="raw slide">
+<p><img src="images/logos/npm.svg" alt="npm"></p>
+<ul>
+<li>un outil en ligne de commande</li>
+<li>inclus dans node</li>
+<li>un gigantesque <a href="https://www.npmjs.com">dépôt de modules JS</a></li>
+</ul>
+<pre><code class="lang-sh">node -v
+npm -v
+</code></pre>
+</section>
+<section id="modules-et-npm-search" class="slide">
+<h2>npm : rechercher</h2><ul>
+<li><code>npm search</code><ul>
+<li>Pas très pratique</li>
+</ul>
+</li>
+<li>Google &quot;site:npmjs.com&quot; + recherche (évite les tutos)…<ul>
+<li>Pas forcément aussi pertinent</li>
+</ul>
+</li>
+<li><a href="http://npms.io">http://npms.io</a></li>
+<li><a href="https://npmjs.com">https://npmjs.com</a><ul>
+<li>Même résultats que <code>npms.io</code></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="modules-et-npm-install" class="slide">
+<h2>npm : installation</h2><pre><code class="lang-sh">npm add <span class="hljs-variable">$moduleName</span>
+</code></pre>
+<ul>
+<li>Installe dans le dossier <code>node_modules</code> le plus proche (en remontant)</li>
+<li>Persiste la dépendance dans <code>package.json</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash'</span>)
+</code></pre>
+<ul>
+<li>Va chercher dans le dossier <code>node_modules</code> le plus proche (en remontant)</li>
+</ul>
+<p><strong>Le <code>package-lock.json</code> décrit l&#39;arbre des dépendances</strong></p>
+</section>
+<section id="modules-et-npm-modules-1" class="slide">
+<h2>Modules : <a href="http://wiki.commonjs.org/wiki/Modules/1.0">CommonJS</a></h2><ul>
+<li>Charger un module : <code>require(cheminRelatif)</code></li>
+<li>Définir un module : <code>module.exports = publicAPI</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// monmodule.js ou monmodule/index.js</span>
+<span class="hljs-built_in">module</span>.exports = {
+  hello () { <span class="hljs-keyword">return</span> <span class="hljs-string">"Hello, world"</span> }
+}
+</code></pre>
+<ul>
+<li><strong>un module = un fichier</strong> ou un dossier</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// script.js</span>
+<span class="hljs-keyword">const</span> mod = <span class="hljs-built_in">require</span>(<span class="hljs-string">"/path/to/monmodule"</span>) <span class="hljs-comment">// .js facultatif</span>
+<span class="hljs-built_in">console</span>.log(mod.hello())
+</code></pre>
+</section>
+<section id="modules-et-npm-modules-2" class="slide">
+<h2>Modules : <a href="http://wiki.commonjs.org/wiki/Modules/1.0">CommonJS</a></h2><ul>
+<li>Définition alternative : <code>exports.name = something</code></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// monmodule.js ou monmodule/index.js</span>
+exports.hello = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">"Hello, world"</span>
+}
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// script.js</span>
+<span class="hljs-keyword">const</span> mod = <span class="hljs-built_in">require</span>(<span class="hljs-string">"/path/to/monmodule"</span>) <span class="hljs-comment">// .js facultatif</span>
+<span class="hljs-built_in">console</span>.log(mod.hello())
+</code></pre>
+</section>
+<section id="modules-et-npm-modules-singleton" class="slide">
+<h2>Modules : Singleton</h2><pre><code class="lang-js"><span class="hljs-comment">// premier chargement = lecture et exécution</span>
+<span class="hljs-keyword">const</span> mod1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/monmodule'</span>)
+
+<span class="hljs-comment">// pas d'exécution, le module est caché</span>
+<span class="hljs-keyword">const</span> mod2 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/monmodule'</span>)
+
+mod1 === mod2 <span class="hljs-comment">// true</span>
+</code></pre>
+</section>
+<section id="modules-et-npm-modules-scope" class="slide">
+<h2>Modules : Scope</h2><p>Tout se passe comme si la fonction <code>require</code> englobait le code du module dans une fonction dédiée :</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">require</span> (<span class="hljs-params">path</span>) </span>{
+  <span class="hljs-keyword">let</span> <span class="hljs-built_in">module</span> = {
+    id: <span class="hljs-string">'…'</span>,
+    exports: {},
+    …
+  }
+  <span class="hljs-keyword">let</span> exports = <span class="hljs-built_in">module</span>.exports
+
+  evalScript(path)
+
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports
+}
+</code></pre>
+</section>
+<section id="modules-et-npm-core-modules" class="slide">
+<h2>Les modules du cœur</h2><ul>
+<li><code>require(&quot;…/fichier.js&quot;)</code> = perso</li>
+<li><code>require(&quot;module&quot;)</code> = core ou npm</li>
+<li>cf. <a href="https://nodejs.org/dist/latest-v6.x/docs/api/">nodejs.org/en/docs/</a></li>
+</ul>
+<h3>Les principaux</h3><ul>
+<li>Fichiers : <code>fs</code>, <code>path</code></li>
+<li>Réseaux : <code>http</code>, <code>net</code></li>
+<li>Système : <code>os</code>, <code>child_process</code></li>
+<li>Utilitaires : <code>util</code></li>
+</ul>
+</section>
+<section id="modules-et-npm-es6-modules" class="slide">
+<h2><a href="https://nodejs.org/api/esm.html">ES Modules</a></h2><pre><code class="lang-js"><span class="hljs-comment">// export (module.mjs)</span>
+<span class="hljs-keyword">const</span> life = <span class="hljs-number">42</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> life
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> named1 = <span class="hljs-number">1</span>
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">named2</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>
+}
+
+<span class="hljs-comment">// import</span>
+<span class="hljs-keyword">import</span> defaultExport <span class="hljs-keyword">from</span> <span class="hljs-string">'module'</span>
+<span class="hljs-keyword">import</span> { named1, named2 <span class="hljs-keyword">as</span> renamed } <span class="hljs-keyword">from</span> <span class="hljs-string">'module'</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> object <span class="hljs-keyword">from</span> <span class="hljs-string">'module'</span>
+<span class="hljs-keyword">import</span> defaultExport, { named1 } <span class="hljs-keyword">from</span> <span class="hljs-string">'module'</span>
+</code></pre>
+<ul>
+<li>ES6 : symboles connus <a href="https://medium.com/@mivanichok/understanding-es6-modules-in-depth-article-b49612926e39">au parsing</a></li>
+<li>CommonJS : symboles connus au runtime</li>
+</ul>
+</section>
+<section id="modules-et-npm-require-destructuring" class="slide">
+<h2>La syntaxe ES6 est cool…</h2><p>…mais tout l&#39;écosystème n&#39;est pas forcément adapté :</p>
+<ul>
+<li>Support encore <em>expérimental</em></li>
+<li>Extension .mjs</li>
+</ul>
+<p>On peut utiliser le <em>destructuring</em> et les <em>shorthand properties</em> avec <code>require</code> et <code>exports</code> :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// export</span>
+<span class="hljs-built_in">module</span>.exports = { named1, named2 }
+
+<span class="hljs-comment">// import</span>
+<span class="hljs-keyword">const</span> { named1, named2: renamed } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./module'</span>)
+</code></pre>
+</section>
+<section id="modules-et-npm-package" class="slide">
+<h2>Modules : <a href="http://wiki.commonjs.org/wiki/Packages/1.0#Required_Fields">packages</a></h2><ul>
+<li>Méta-données descriptives (publication, recherche, contributeurs)</li>
+<li>Méta-données techniques (npm, version, dépendances)</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// package.json</span>
+{
+  <span class="hljs-string">"name"</span>: <span class="hljs-string">"monmodule"</span>,
+  <span class="hljs-string">"version"</span>: <span class="hljs-string">"1.0.0"</span>,
+  <span class="hljs-string">"main"</span>: <span class="hljs-string">"index.js"</span>,
+  <span class="hljs-string">"dependencies"</span>: {
+    <span class="hljs-string">"sum"</span>: <span class="hljs-string">"^1.0.0"</span>
+  }
+  …
+}
+</code></pre>
+<pre><code class="lang-sh">npm init
+</code></pre>
+</section>
+<section id="modules-et-npm-dependencies" class="slide">
+<h2>Dépendances : installation</h2><ul>
+<li><code>package.json</code> = attendu général</li>
+<li><code>package-lock.json</code> = instantané figé</li>
+</ul>
+<p>Commandes utiles :</p>
+<ul>
+<li><code>npm add [--save-dev] $module</code> ajoute une dépendance</li>
+<li><code>npm install [--production]</code> installe les dépendances</li>
+<li><code>npm upgrade [$module]</code> met à jour <code>package-lock</code></li>
+</ul>
+</section>
+<section id="modules-et-npm-semver" class="slide">
+<h2>npm : versions</h2><p><img src="images/semantic-versioning.png" alt=""></p>
+<p>Respecter le <a href="http://semver.org">semantic versioning</a> :</p>
+<pre><code class="lang-sh">npm version <span class="hljs-string">"major"</span>|<span class="hljs-string">"minor"</span>|<span class="hljs-string">"patch"</span>
+</code></pre>
+<ul>
+<li>Mnémo : <strong>BFf</strong> (Breaking Feature fix)</li>
+</ul>
+</section>
+<section id="modules-et-npm-dependencies-versioning" class="slide">
+<h2>Dépendances : versions</h2><p><code>npm</code> utilise le <em>semantic versionning</em> :</p>
+<ul>
+<li><code>~1.5.3</code> (équivalent) ~= 1.5.x</li>
+<li><code>^1.5.3</code> (compatible) ~= 1.x</li>
+</ul>
+<p><strong>BADASS</strong> → immunisé au &quot;dependency hell&quot;</p>
+<p>Attention aux sous-dépendances qui se mettent à jour !</p>
+<ul>
+<li>Bien commiter <code>package-lock.json</code>, qui rend les installations reproductibles</li>
+</ul>
+</section>
+<section id="modules-et-npm-binary-dependencies-1" class="slide">
+<h2>Dépendances : binaires</h2><p>On peut écrire des modules pour Node.js en C++ :</p>
+<ul>
+<li>Performances</li>
+<li>Réutilisation</li>
+<li><em>Bindings</em> avec d&#39;autres langages (Rust, Python, etc.)</li>
+</ul>
+<p><a href="https://github.com/nodejs/nan">Native Abstractions for Node.js</a> / <a href="https://github.com/nodejs/node-addon-examples">Node.js Addon Examples</a></p>
+</section>
+<section id="modules-et-npm-binary-dependencies-2" class="slide">
+<h2>Dépendances : binaires</h2><pre><code class="lang-cpp"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;nan.h&gt;</span></span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> v8;
+NAN_METHOD(Method) {
+  NanScope();
+  NanReturnValue(String::New(<span class="hljs-string">"world"</span>));
+}
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Init</span><span class="hljs-params">(Handle&lt;Object&gt; exports)</span> </span>{
+  exports-&gt;Set(NanSymbol(<span class="hljs-string">"hello"</span>), FunctionTemplate::New(Method)-&gt;GetFunction());
+}
+NODE_MODULE(hello, Init)
+</code></pre>
+</section>
+<section id="modules-et-npm-npm-more" class="slide">
+<h2>npm : toujours plus</h2><h3>Exit les favoris</h3><pre><code class="lang-sh">npm home <span class="hljs-variable">$module</span>
+</code></pre>
+<h3>Exit les task runners</h3><pre><code class="lang-js"><span class="hljs-comment">// package.json</span>
+{
+  <span class="hljs-string">"scripts"</span>: {
+    <span class="hljs-string">"hello"</span>: <span class="hljs-string">"echo hello"</span>
+  }
+}
+</code></pre>
+<pre><code class="lang-sh">npm run hello
+</code></pre>
+<p>Hooks <code>pre</code> et <code>post</code></p>
+</section>
+</section>
+<section>
+<section id="apis-asynchrones" class="slide cover"><h1>APIs asynchrones</h1></section><section id="apis-asynchrones-concurrence-vs-multitask-vs-bloquant" class="slide">
+<h2>Paradigmes</h2><p><strong>Multi-tâche</strong></p>
+<ul>
+<li>Vraiment parallèle (sauf si pas de CPU disponible)</li>
+<li>Risque d&#39;accès simultanés à la mémoire</li>
+</ul>
+<p><strong>Concurrence</strong></p>
+<ul>
+<li>Les traitements synchrones sont bloquants</li>
+<li>On traite le retour dès que le système est disponible</li>
+</ul>
+<p><strong>Bloquant</strong></p>
+<ul>
+<li>On bloque tout pendant que la base de données bosse</li>
+</ul>
+<p><img class="fragment screen" style="position:relative;height:130px;top:-140px" src="images/lol.gif"></p>
+</section>
+<section id="eventloop" class="slide">
+<p><a href="https://medium.com/@amragaey/shortly-how-node-js-works-on-a-single-thread-763fda99f012">How Node.js works on a single thread</a></p>
+<p><img src="images/eventloop-node.png" alt=""></p><aside class="notes"><p>Visuel : <a href="http://latentflip.com/loupe/">http://latentflip.com/loupe/</a></p>
+<p>En détail : <a href="https://youtu.be/8aGhZQkoFbQ">https://youtu.be/8aGhZQkoFbQ</a></p>
+<p><a href="http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained/">http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained/</a></p>
+<p>Exemple browser :</p>
+<p><img src="images/eventloop-browser.png" alt=""></p></aside>
+</section>
+<section id="apis-asynchrones-callbacks" class="slide">
+<h2>Callbacks</h2><ul>
+<li>On passe à la fonction asynchrone la fonction qui devra être exécutée quand le résultat sera prêt</li>
+<li>Format choisi par Node.js</li>
+</ul>
+<p>Signature typique d&#39;une fonction asynchrone par callback :</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span> (<span class="hljs-params">...args, callback</span>) </span>{
+  <span class="hljs-comment">// When an error occurs:</span>
+  callback(err)
+  <span class="hljs-comment">// When a result is available:</span>
+  callback(<span class="hljs-literal">null</span>, result)
+}
+</code></pre>
+<ul>
+<li><em>error-first callbacks</em> (errback) : une erreur est la seule donnée qu&#39;on est sûre de pouvoir recevoir</li>
+</ul>
+</section>
+<section id="apis-asynchrones-flow-control" class="slide">
+<h2>Flow control</h2><p>Appels en série : &quot;Pyramid of doom&quot;</p>
+<pre><code class="lang-js">fs.readFile(file1, (…) =&gt; {
+  fs.readFile(file2, (…) =&gt; {
+    fs.readFile(file3, (…) =&gt; {
+      <span class="hljs-comment">// Dafuq?</span>
+    });
+  });
+});
+</code></pre>
+<p>Appels en concurrence : complexe…</p>
+<pre><code class="lang-js"><span class="hljs-keyword">let</span> pending = <span class="hljs-number">42</span>;
+…
+</code></pre>
+<p>Pour éviter le <a href="http://callbackhell.com/">callback hell</a> : <code>async</code></p>
+</section>
+<section id="apis-asynchrones-promise" class="slide">
+<h2><a href="https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Promise">Promise</a></h2><p>Manipuler la représentation de la valeur future au lieu d&#39;attendre sa disponibilité</p>
+<ul>
+<li><strong>Standard EcmaScript</strong>, support natif dans Node</li>
+<li><strong>Stateful</strong></li>
+<li><strong>Chaînable</strong></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> promiseOfBuffer = read(<span class="hljs-string">"file"</span>)
+<span class="hljs-comment">// .then = when value really available</span>
+promiseOfBuffer.then(callback) <span class="hljs-comment">// callback(buffer)</span>
+<span class="hljs-comment">// this returns the promise of callback(buffer)'s return value</span>
+.catch(onError) <span class="hljs-comment">// onError(err)</span>
+<span class="hljs-comment">// this also returns a promise…</span>
+</code></pre>
+<p>Aide à l&#39;orchestration : <code>Promise.all(promises)</code></p>
+</section>
+<section id="apis-asynchrones-promise-101" class="slide">
+<h3><a href="https://bitsofco.de/javascript-promises-101/">Promise 101</a></h3><p><em>Beloved features</em> des promesses :</p>
+<ul>
+<li>Chaînage (transformations successives)</li>
+<li>Propagation d&#39;erreur</li>
+</ul>
+<p><img src="images/promise-chain.png" alt=""></p>
+</section>
+<section id="apis-asynchrones-async-await" class="slide">
+<h2>ES2017</h2><ul>
+<li>Fonctions capables de s&#39;interrompre et redémarrer</li>
+<li>Intégration native des promesses</li>
+</ul>
+<h3><a href="https://tc39.github.io/ecmascript-asyncawait"><code>async</code> / <code>await</code></a></h3><pre><code class="lang-js"><span class="hljs-keyword">const</span> incr = <span class="hljs-keyword">async</span> (promise) {
+  <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> promise
+  <span class="hljs-keyword">return</span> value + <span class="hljs-number">1</span>
+}
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> incr(getFromHTTP()))
+}
+
+main()
+</code></pre>
+<p>Attention à <em>series</em> vs <em>parallel</em> : on n&#39;est pas exempté de <code>Promise.all</code> !</p>
+</section>
+<section id="apis-asynchrones-streams" class="slide">
+<h2>Streams</h2><p><img src="images/stream.jpg" height="400"></p>
+<p><code>fs.createReadStream</code>, <code>fs.createWriteStream</code>, <code>http.Request</code>, <code>http.Response</code>…</p>
+</section>
+<section id="apis-asynchrones-events" class="slide">
+<h2>Évènements</h2><ul>
+<li>Classe <a href="http://nodejs.org/api/events.html#events_class_events_eventemitter"><code>EventEmitter</code></a></li>
+<li>Exemples : socket (client http, serveur http, https, udp…), streams, process…</li>
+<li><code>emit</code> = exécuter les listeners</li>
+</ul>
+<pre><code class="lang-js">ee.on(<span class="hljs-string">"eventName"</span>, handler); <span class="hljs-comment">// === ee.addListener</span>
+ee.removeListener(<span class="hljs-string">"eventName"</span>, handler);
+ee.removeAllListeners(<span class="hljs-string">"eventName"</span>);
+
+ee.once(<span class="hljs-string">"eventName"</span>, …); <span class="hljs-comment">// your best friend against memory leak</span>
+
+ee.emit(<span class="hljs-string">"eventName"</span>, arg1, arg2...);
+</code></pre>
+<p>Attention à l&#39;événement spécial <strong><code>error</code></strong></p>
+</section>
+<section id="apis-asynchrones-quoi-quand" class="slide">
+<h2>Quelle API asynchrone pour quel usage ?</h2><ul>
+<li><strong>Une question, une réponse</strong> : callback ou promesse<ul>
+<li><em>Bare metal</em> : callback</li>
+<li>En général : promesse</li>
+</ul>
+</li>
+<li><strong>Flux d&#39;info dans l&#39;ordre</strong> : stream</li>
+<li><strong>Flux d&#39;info désordonné</strong> : event</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="http" class="slide cover"><h1>HTTP</h1></section><section id="http-module-http" class="slide">
+<h2>Module <code>http</code></h2><pre><code class="lang-js"><span class="hljs-keyword">const</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>)
+</code></pre>
+<p><a href="http://nodejs.org/api/http.html">http://nodejs.org/api/http.html</a></p>
+<p><strong><code>createServer</code></strong> : création de serveur HTTP</p>
+<pre><code class="lang-js">http.createServer((incomingMessage, serverResponse) =&gt; {})
+</code></pre>
+<p><strong><code>request</code></strong> : effectuer une requête HTTP</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> clientRequest = http.request(<span class="hljs-string">'http://www.google.com'</span>)
+</code></pre>
+<p>Préférer le module <code>axios</code> ou <code>node-fetch</code></p>
+</section>
+<section id="http-serveur-simple" class="slide">
+<h2>Un serveur HTTP simple</h2><p>Chaque requête passe par le <em>handler</em></p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handler</span> (<span class="hljs-params">req, res</span>) </span>{
+  <span class="hljs-comment">// req instanceof http.IncomingMessage</span>
+  <span class="hljs-comment">// res instanceof http.ServerResponse</span>
+  res.setHeader(<span class="hljs-string">'content-type'</span>, <span class="hljs-string">'text/plain'</span>)
+  res.write(<span class="hljs-string">`You visit <span class="hljs-subst">${req.url}</span>`</span>)
+  res.end()
+}
+</code></pre>
+<ul>
+<li>La <em>request</em> représente les données envoyées par le client<ul>
+<li><code>method</code>, <code>url</code>, <code>headers</code>, données POST (<em>readable stream</em>)</li>
+</ul>
+</li>
+<li>La <em>response</em> représente la réponse qui sera envoyée<ul>
+<li>définition des headers</li>
+<li>envoi du contenu (<em>writable stream</em>)</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="http-attention-calculs-bloquants" class="slide">
+<h2>Attention aux calculs bloquants !</h2><ul>
+<li>Requête client = empilée dans l&#39;<em>event loop</em></li>
+<li><em>Bloquer</em> = aucune requête n&#39;est traitée pendant ce temps<ul>
+<li>Elles continuent de s&#39;empiler</li>
+</ul>
+</li>
+</ul>
+<p class=fragment>Apprenez à <strong class=fragment>VRAIMENT</strong> craindre le code bloquant</p>
+
+<p><img class="screen fragment" src="images/horror.jpg"></p><aside class="notes"><p>Tester le fameux Fibonnacci, en profiter pour réaliser un routing simple avec <code>http</code></p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fibo</span> (<span class="hljs-params">n</span>) </span>{
+  <span class="hljs-keyword">if</span> (n === <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">if</span> (n === <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">return</span> fibo(n - <span class="hljs-number">1</span>) + fibo(n - <span class="hljs-number">2</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handler</span> (<span class="hljs-params">req, res</span>) </span>{
+  <span class="hljs-keyword">if</span> (req.url.substring(<span class="hljs-number">0</span>, <span class="hljs-number">6</span>) === <span class="hljs-string">"/fibo/"</span>) {
+    <span class="hljs-keyword">var</span> n = <span class="hljs-built_in">Number</span>(req.url.substring(<span class="hljs-number">6</span>));
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(n)) {
+      res.statusCode = <span class="hljs-number">400</span>;
+      res.write(<span class="hljs-string">"ERROR: valid number expected"</span>);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">var</span> result = fibo(n);
+      res.write(<span class="hljs-string">"&lt;code&gt;fibo("</span> + n + <span class="hljs-string">") = &lt;strong&gt;"</span> + result + <span class="hljs-string">"&lt;/strong&gt;&lt;/code&gt;"</span>);
+    }
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (req.url === <span class="hljs-string">"/"</span>) {
+    res.write(<span class="hljs-string">"Usage: /fibo/{number}"</span>);
+  } <span class="hljs-keyword">else</span> {
+    res.statusCode = <span class="hljs-number">404</span>;
+    res.write(<span class="hljs-string">"Not found"</span>);
+  }
+
+  <span class="hljs-comment">// No res.end = browser never renders</span>
+  <span class="hljs-comment">// Duplicate res.end = server crashes</span>
+  res.end();
+}
+</code></pre></aside>
+</section>
+<section id="http-aller-plus-loin" class="slide">
+<h2>Aller plus loin</h2><p>Le module <code>http</code> est minimaliste</p>
+<p><strong>There is a module for that</strong></p>
+<ul>
+<li>Routage : <code>node-simple-router</code>, <code>connect</code>, <code>express</code>…</li>
+<li>Cookies : <code>cookie</code> (+ <code>res.setHeader</code>), <code>connect</code>, <code>express</code>…</li>
+<li>Formulaires : <code>formidable</code>, <code>busboy</code>, <code>connect</code>, <code>express</code>…</li>
+</ul>
+<p><strong>Simplifions-nous la vie</strong></p>
+</section>
+</section>
+<section>
+<section id="express" class="slide cover"><h1>Express</h1></section><section id="express-express" class="slide">
+<h2>Express</h2><p><em>Micro-framework</em> pour les applications web Node : <a href="http://expressjs.com/">http://expressjs.com/</a></p>
+<ul>
+<li><a href="http://expressjs.com/4x/api.html">API élégante</a></li>
+<li><a href="http://expressjs.com/guide/using-middleware.html">Extensible (<em>middlewares</em>)</a></li>
+<li><a href="http://expressjs.com/4x/api.html#app.settings">Configurable</a></li>
+<li><a href="https://github.com/tj/consolidate.js">Rendu par templates</a></li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> app = express();
+
+app.get(<span class="hljs-string">"/"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+  <span class="hljs-comment">// req: http://expressjs.com/4x/api.html#request</span>
+  <span class="hljs-comment">// res: http://expressjs.com/4x/api.html#response</span>
+});
+
+<span class="hljs-keyword">const</span> server = http.createServer(app);
+</code></pre><aside class="notes"><p>Installer express</p>
+<pre><code class="lang-sh">npm add express
+</code></pre>
+<p>Écrire le serveur Hello world :</p>
+<pre><code class="lang-js"><span class="hljs-pi">'use strict'</span>;
+
+<span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">const</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+
+<span class="hljs-keyword">const</span> app = express();
+
+app.get(<span class="hljs-string">'/'</span>, (req, res) =&gt; {
+  res.send(<span class="hljs-string">'Hello, world'</span>);
+});
+
+<span class="hljs-keyword">const</span> server = http.createServer(app);
+
+server.listen(<span class="hljs-number">8080</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> { host, port } = server.address();
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Server ready %s:%s"</span>, host, port);
+});
+</code></pre>
+<h3>Configuration</h3><p>Supprimer l&#39;entête automatique &quot;X-Powered-By: Express&quot;</p>
+<pre><code class="lang-js">app.set(<span class="hljs-string">"x-powered-by"</span>, <span class="hljs-literal">false</span>);
+app.get(<span class="hljs-string">"x-powered-by"</span>) <span class="hljs-comment">// two-face get</span>
+</code></pre></aside>
+</section>
+<section id="express-routing" class="slide">
+<h2>Le routage</h2><p>Route = méthode + url</p>
+<pre><code class="lang-js">app.méthode(url, handler)
+</code></pre>
+<h3>Format</h3><pre><code class="lang-js"><span class="hljs-comment">// Simple</span>
+app.get(<span class="hljs-string">"/hello/world"</span>, …)
+
+<span class="hljs-comment">// Parameter</span>
+app.get(<span class="hljs-string">"/hello/:world"</span>, …) <span class="hljs-comment">// req.params.world</span>
+
+<span class="hljs-comment">// Complex URL using RegExp</span>
+app.get(<span class="hljs-regexp">/^hello\/(.*)$/</span>, …) <span class="hljs-comment">// req.params[1]</span>
+
+<span class="hljs-comment">// Parameter constraint</span>
+app.get(<span class="hljs-string">"/hello/:world([^\\s+])"</span>, …)
+</code></pre><aside class="notes"><h2>TP (nouveau projet)</h2><p><strong>Application fil rouge : jeu en ligne</strong></p>
+<ul>
+<li><code>/</code> → rendu de la homepage = formulaire d&#39;identification</li>
+<li><code>/login</code> → traitement du formulaire d&#39;identification, redirige vers</li>
+<li><code>/welcome/:username</code> → rendu d&#39;une page &quot;bonjour machin&quot;</li>
+</ul>
+<p><strong>Ne pas tester le flux complet avant code final</strong></p>
+<pre><code class="lang-js">app.get(<span class="hljs-string">"/"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+  res.render(<span class="hljs-string">"login"</span>);
+});
+
+app.get(<span class="hljs-string">"/welcome/:username"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+  res.render(<span class="hljs-string">"app"</span>, {
+    <span class="hljs-string">"username"</span>: req.params.username
+  });
+});
+
+<span class="hljs-comment">// On n'a pas encore les outils pour celle-là</span>
+app.post(<span class="hljs-string">"/login"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+  <span class="hljs-keyword">var</span> postData = …; <span class="hljs-comment">// ???</span>
+  res.redirect(<span class="hljs-string">"/welcome/"</span> + postData.username);
+});
+</code></pre>
+<p>Lire les données POST ? <strong>Middlewares</strong></p>
+<h3>Configuration moteur de templates</h3><p><a href="https://github.com/tj/consolidate.js">https://github.com/tj/consolidate.js</a></p>
+<pre><code class="lang-js">app.engine(<span class="hljs-string">"html"</span>, consolidate.swig);
+app.set(<span class="hljs-string">"views"</span>, path.join(__dirname, <span class="hljs-string">"views"</span>));
+app.set(<span class="hljs-string">"view engine"</span>, <span class="hljs-string">"html"</span>);
+</code></pre></aside>
+</section>
+<section id="express-middlewares" class="slide">
+<h2>Middlewares</h2><p>Un middleware s&#39;intercale dans le traitement d&#39;une route.</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span> (<span class="hljs-params">req, res, next</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, req.method, req.url);
+  <span class="hljs-comment">// Async: call next or chain is broken!</span>
+  next();
+});
+</code></pre>
+<p>Ils peuvent être utilisés au niveau de l&#39;application :</p>
+<pre><code class="lang-js">app.use(log);
+…
+</code></pre>
+<p>Ou au niveau d&#39;une route seulement :</p>
+<pre><code class="lang-js">app.get(<span class="hljs-string">"/logged"</span>, log, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{ … });
+app.get(<span class="hljs-string">"/unlogged"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{ … });
+</code></pre><aside class="notes"><p><strong>Middleware de gestion d&#39;erreur</strong></p>
+<pre><code class="lang-js">app.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, req, res, next</span>) </span>{
+  res.render(<span class="hljs-string">"error"</span>, {
+    <span class="hljs-string">"err"</span>: err.message
+  });
+});
+</code></pre></aside>
+</section>
+<section id="express-middlewares-standard" class="slide">
+<h2>Middlewares standard</h2><p>Express ne fait rien à part le routing, les middlewares vont assurer les fonctions auxiliaires :</p>
+<ul>
+<li>Formulaire : <strong><code>body-parser</code></strong> (pas d&#39;upload), <strong><code>multer</code></strong></li>
+<li>Logging : <strong><code>morgan</code></strong> (ce nom…)</li>
+<li>Serveur statique : <strong><code>serve-static</code></strong>, <code>serve-index</code></li>
+<li>Cookies : <strong><code>cookie-parser</code></strong> (<code>req.cookies</code>, <code>req.signedCookies</code>, <code>res.cookie()</code>)</li>
+<li>Sessions : <strong><code>express-session</code></strong></li>
+<li>Compression GZip : <code>compression</code></li>
+<li>Sécurité CSRF : <code>csurf</code></li>
+<li>etc… <a href="https://github.com/senchalabs/connect#middleware">https://github.com/senchalabs/connect#middleware</a></li>
+</ul><aside class="notes"><h2>TP</h2><ul>
+<li>Activer le logging<ul>
+<li>Note : <code>morgan</code> ne log que les requêtes terminées, oublier d&#39;appeler <code>next()</code> dans un middleware et observer ce qui se produit</li>
+</ul>
+</li>
+<li>Activer le serveur static pour les assets (css, js, images)</li>
+<li>Activer la session</li>
+</ul>
+<pre><code class="lang-js">app.use(morgan());
+app.use(serveStatic(path.join(__dirname, <span class="hljs-string">"public"</span>)));
+app.use(expressSession({ secret: <span class="hljs-string">'…'</span>, resave: <span class="hljs-literal">true</span>, saveUninitialized: <span class="hljs-literal">false</span> });
+app.use(bodyParser.urlencoded({ extended: <span class="hljs-literal">true</span> }));
+</code></pre>
+<ul>
+<li>Utiliser la session pour l&#39;identification<ul>
+<li>Middleware de protection de route</li>
+<li>Formulaire de login</li>
+</ul>
+</li>
+<li>Authentification : voir module <code>passport</code></li>
+</ul></aside>
+</section>
+<section id="express-architecture" class="slide">
+<h2>Architecture classique</h2><p>Arborescence d&#39;une application Express</p>
+<pre><code>.
+├── app.js
+├── config/
+├── data/
+├── <span class="hljs-class"><span class="hljs-keyword">lib</span>/</span>
+│   ├── routes/
+│   └── session-store.js
+├── package.json
+├── public/
+├── server.js
+└── views/
+    └── layout.html
+</code></pre><pre><code class="lang-json">{
+  "<span class="hljs-attribute">main</span>": <span class="hljs-value"><span class="hljs-string">"app.js"</span></span>,
+  "<span class="hljs-attribute">scripts</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">start</span>": <span class="hljs-value"><span class="hljs-string">"node server.js"</span></span>,
+    "<span class="hljs-attribute">watch</span>": <span class="hljs-value"><span class="hljs-string">"nodemon -i public server.js"</span>
+  </span>}
+  …
+</span>}
+</code></pre><aside class="notes"><p><strong>Fichiers statiques en production</strong></p>
+<pre><code class="lang-nginx"><span class="hljs-title">location</span> / {
+    <span class="hljs-title">root</span> /path/to/app/public;
+    <span class="hljs-title">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ <span class="hljs-variable">@node</span>;
+}
+
+<span class="hljs-title">location</span> <span class="hljs-variable">@node</span> {
+    <span class="hljs-title">proxy_pass</span> <span class="hljs-url">http://127.0.0.1:8080</span>;
+}
+</code></pre>
+<ul>
+<li><code>config/</code> Stockage des fichiers de configuration (voir plus loin)</li>
+<li><code>data/</code> Stockage de données fichiers, fixtures de test, etc…</li>
+<li><code>lib/routes/</code> Ranger les routes par thématique</li>
+<li><code>lib/session-store.js</code> Externaliser le <em>session store</em> pour pouvoir le réutiliser (sera utile pour partager la session dans un websocket)</li>
+</ul></aside>
+</section>
+<section id="express-alternatives-1" class="slide">
+<h2>Alternatives</h2><h3><a href="http://sailsjs.org">Sails.JS</a></h3><ul>
+<li>&quot;Full stack&quot;</li>
+<li>Scaffolder inspiré de RoR (yeoman like)</li>
+<li>Blueprints pour faciliter le CRUD</li>
+<li>ORM avec <a href="https://github.com/balderdashy/waterline">Waterline</a> (mongoose like)</li>
+<li>Routes HTTP et/ou WebSocket avec <a href="https://github.com/balderdashy/sails.io.js">JWR</a></li>
+</ul>
+<h3><a href="http://hapijs.com">Hapi</a></h3><ul>
+<li>Configuration over code</li>
+<li>Coup de cœur pour la lib de validation : <a href="https://github.com/hapijs/joi">Joi</a></li>
+</ul>
+</section>
+<section id="express-alternatives-koa" class="slide">
+<h2>Alternatives : <a href="https://github.com/koajs/koa/wiki">Koa</a> l&#39;héritier</h2><ul>
+<li>Support asynchrone natif</li>
+<li>Un objet <code>context</code> mieux organisé</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> Koa = <span class="hljs-built_in">require</span>(<span class="hljs-string">'koa'</span>);
+<span class="hljs-keyword">const</span> app = <span class="hljs-keyword">new</span> Koa();
+
+app.use(ctx =&gt; {
+  ctx.body = <span class="hljs-string">'Hello Koa'</span>; <span class="hljs-comment">// Response</span>
+});
+
+app.listen(<span class="hljs-number">3000</span>);
+</code></pre>
+<ul>
+<li>Routing avec <a href="https://github.com/koajs/router"><code>@koa/router</code></a></li>
+<li>Parsing de requête avec <a href="https://github.com/dlau/koa-body"><code>koa-body</code></a></li>
+<li>Sessions avec <a href="https://github.com/koajs/koa-redis"><code>koa-redis</code></a></li>
+<li>Sécurité avec <a href="https://github.com/venables/koa-helmet#readme"><code>koa-helmet</code></a></li>
+<li><code>koa-logger</code>, <code>koa-locales</code>, <code>koa-views</code>…</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="bases-de-donnees" class="slide cover"><h1>Bases de données</h1></section><section id="bases-de-donnees-node-et-bases-de-donnees" class="slide" data-background="images/plug-and-play.png" data-background-size="200px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>Node et les bases de données</h2><blockquote>
+<p>There&#39;s a module for that</p>
+</blockquote>
+<ul>
+<li><code>sqlite3</code></li>
+<li><code>mysql</code></li>
+<li><code>oracle</code> <span class="screen fragment">(désolé)</span></li>
+<li><code>pg</code> (+ <code>pg-native</code>)</li>
+<li><code>mongodb</code></li>
+<li><code>cradle</code> (CouchDB)</li>
+<li><code>redis</code> (+ <code>hiredis</code>)</li>
+<li>…</li>
+</ul>
+</section>
+<section id="bases-de-donnees-mongodb" class="slide" data-background="images/mongodb.png" data-background-size="200px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>MongoDB</h2><p>Base orientée documents.</p>
+<ul>
+<li><strong>La star des bases NoSQL</strong></li>
+<li>Le meilleur choix ?<ul>
+<li>Syntaxe <strong>JavaScript</strong></li>
+<li>Modélisation polyvalente (documents, <em>schemaless</em>) (*)</li>
+<li>Scalable facilement</li>
+<li><strong>Performances : attention !</strong> (**)</li>
+</ul>
+</li>
+<li>(*) Utiliser <a href="http://mongoosejs.com/index.html">Mongoose</a></li>
+</ul>
+<p class=fragment>(*) Attention : ne pas réfléchir relationnellement en NoSQL</p>
+
+<p class=fragment>(**) Utiliser l&#39;aggrégation sans cluster = suicide</p>
+</section>
+<section id="bases-de-donnees-redis" class="slide" data-background="images/redis.png" data-background-size="200px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>Redis</h2><p>Base clé/valeur <strong>extrèmement rapide</strong></p>
+<ul>
+<li>Toutes les données chargées en mémoire<ul>
+<li>Hélas la RAM c&#39;est cher :(</li>
+</ul>
+</li>
+<li>Données structurées et opérations complexes</li>
+<li>Transactions</li>
+<li>Scripts</li>
+<li>Cluster</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// npm add ioredis</span>
+<span class="hljs-keyword">const</span> Redis = <span class="hljs-built_in">require</span>(<span class="hljs-string">'ioredis'</span>)
+<span class="hljs-keyword">const</span> client = <span class="hljs-keyword">new</span> Redis()
+client.get(<span class="hljs-string">'toto'</span>) <span class="hljs-comment">// Promise&lt;String&gt;</span>
+</code></pre><aside class="notes"><h2>TP</h2><ul>
+<li>Stocker les sessions dans Redis</li>
+<li>Stocker des données dans Redis ?</li>
+</ul></aside>
+</section>
+<section id="bases-de-donnees-redis-toujours-plus" class="slide">
+<h2>Redis : toujours plus !</h2><p>La boite à outils de la scalabilité !</p>
+<ul>
+<li>Synchroniser des opérations à travers un cluster :<br><strong>PUB/SUB</strong> (<code>PUBLISH</code>, <code>SUBSCRIBE</code>)</li>
+<li>Pool de workers pour déléguer les calculs :<br><strong>PUSH/PULL</strong> (<code>RPUSH</code>, <code>BLPOP</code>)</li>
+</ul>
+<p><img class="fragment screen" src="images/batbelt.jpg"></p>
+</section>
+<section id="bases-de-donnees-redis-pubsub-pushpull" class="slide">
+<h3>PUB/SUB</h3><pre><code class="lang-js"><span class="hljs-comment">// Subscribe</span>
+client.subscribe(<span class="hljs-string">'channel'</span>) <span class="hljs-comment">// Promise&lt;number&gt;</span>
+client.on(<span class="hljs-string">'message'</span>, (channel, message) =&gt; { … })
+
+<span class="hljs-comment">// Publish</span>
+client.publish(<span class="hljs-string">'channel'</span>, <span class="hljs-string">'message'</span>)
+</code></pre>
+<h3>PUSH/PULL</h3><pre><code class="lang-js"><span class="hljs-comment">// Worker</span>
+<span class="hljs-keyword">const</span> nextTask = () =&gt; client.blpop(<span class="hljs-string">'jobs'</span>).then(work)
+<span class="hljs-keyword">const</span> work = job =&gt; {
+  … <span class="hljs-comment">// TODO push result to another queue for REQ/REP</span>
+  nextTask()
+}
+
+<span class="hljs-comment">// Master</span>
+client.rpush(<span class="hljs-string">'jobs'</span>, job)
+<span class="hljs-comment">// TODO pop result from another queue for REQ/REP</span>
+</code></pre>
+</section>
+</section>
+<section>
+<section id="tests-unitaires" class="slide cover"><h1>Tests Unitaires</h1></section><section id="tests-unitaires-unit-tests" class="slide">
+<h2>Tester ?</h2><ul>
+<li>Ça sert à débusquer les bugs</li>
+<li>à documenter son API</li>
+<li>à pouvoir refactorer tranquille</li>
+</ul>
+<h3 class=fragment>C&#39;est long à écrire</h3>
+
+<p class=fragment>On appelle ça un investissement</p>
+</section>
+<section id="tests-unitaires-tests" class="slide">
+<h2>Quels types de tests ?</h2><ul>
+<li><strong>Tests unitaires</strong><ul>
+<li>On teste des modules séparément</li>
+<li>On se concentre sur les API</li>
+</ul>
+</li>
+<li><strong>Tests fonctionnels</strong><ul>
+<li>On teste <strong>l&#39;application</strong> au complet</li>
+<li>On vérifie les <strong>fonctionnalités</strong></li>
+</ul>
+</li>
+<li><strong>Tests d&#39;intégration</strong><ul>
+<li>On teste tout l&#39;écosystème</li>
+<li>Souvent avec de vraies jeux de données</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-unitaires-test-runner-mocha" class="slide">
+<h2>Test runner</h2><p>Le &quot;test runner&quot; est l&#39;outil qui va prendre nos fichiers de test et les exécuter, et indiquer le résultat des tests.</p>
+<ul>
+<li>API spécifique injectée</li>
+<li>génération de rapports (Jenkins)</li>
+</ul>
+<p><a href="https://github.com/mochajs/mocha">mocha</a> est un choix populaire pour Node.</p>
+<pre><code class="lang-sh"><span class="hljs-comment"># CI</span>
+mocha --reporter xunit --check-leaks
+
+<span class="hljs-comment"># Dev</span>
+mocha --reporter list --check-leaks --watch --growl
+</code></pre>
+<p>Note : <code>--growl</code> peut requérir <a href="https://github.com/tj/node-growl">un outil tiers</a></p>
+</section>
+<section id="tests-unitaires-assertions-expect" class="slide">
+<h2>Assertions</h2><ul>
+<li>Un test échoue si son code plante</li>
+<li>Assertion = plante si une condition n&#39;est pas vérifiée<ul>
+<li>lecture agréable</li>
+<li>message d&#39;erreur utilisable</li>
+</ul>
+</li>
+</ul>
+<p><a href="http://chaijs.com/">Chai</a> offre une syntaxe sexy (expect ou should) :</p>
+<pre><code class="lang-js">expect(<span class="hljs-number">3.14</span>)
+  .to.be.a(<span class="hljs-string">"number"</span>)
+  .and.to.be.below(<span class="hljs-number">4</span>)
+  .and.to.be.above(<span class="hljs-number">3</span>);
+</code></pre>
+</section>
+<section id="tests-unitaires-npm-test" class="slide">
+<h2><code>npm test</code></h2><ul>
+<li><code>./node_modules/.bin/mocha</code> : long, erreurs possibles</li>
+<li>Installation globale : une étape de plus</li>
+</ul>
+<p>Des solutions :</p>
+<ul>
+<li><code>Makefile</code> : standard, mais Mac/Linux</li>
+<li>scripts npm : devient standard, multi-plateforme</li>
+</ul>
+<pre><code class="lang-json">{
+  "<span class="hljs-attribute">scripts</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">test</span>": <span class="hljs-value"><span class="hljs-string">"mocha -R spec -G --check-leaks test/"</span>
+  </span>}
+</span>}
+</code></pre>
+</section>
+<section id="tests-unitaires-test-asynchrone" class="slide">
+<h2>Tester son code asynchrone</h2><p>Une fonction asynchrone rend la main immédiatement !</p>
+<pre><code class="lang-js">it(<span class="hljs-string">"should do some work"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+  doSomeWork(err =&gt; expect(err).toNotExist());
+  <span class="hljs-comment">// I'm here before the assertion</span>
+});
+<span class="hljs-comment">// And then I'm here, test is finished, assertion not checked</span>
+</code></pre>
+<p>Mocha a pensé à tout :</p>
+<ul>
+<li>La fonction de test prend une fonction en paramètre ?<ul>
+<li>Mocha attend l&#39;appel de ce <em>error-first</em> callback</li>
+</ul>
+</li>
+<li>La fonction de test retourne une Promise ?<ul>
+<li>Mocha attend la <strong>résolution de la promesse</strong></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-unitaires-mocks-spys-injection" class="slide">
+<h2>Mocks, spys, injection…</h2><ul>
+<li><code>sinon</code><ul>
+<li>Pour simuler une API</li>
+<li>Pour &quot;espionner&quot; une fonction (existante ou nouvelle)</li>
+</ul>
+</li>
+<li><code>rewire</code><ul>
+<li>Pour remplacer des variables locales à un module</li>
+</ul>
+</li>
+<li><code>proxyquire</code><ul>
+<li>Pour hijacker les appels à <code>require()</code></li>
+</ul>
+</li>
+</ul>
+<p><code>rewire</code>/<code>proxyquire</code> + <code>sinon</code> = possibilier de remplacer n&#39;importe quelle méthode privée d&#39;un module par un mock surveillé</p>
+</section>
+<section id="tests-unitaires-mocks-spys-injection-sample" class="slide">
+<h2>Mocks, spys, injection…</h2><pre><code class="lang-js"><span class="hljs-comment">// module-a-tester.js</span>
+<span class="hljs-keyword">const</span> client = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./db'</span>)
+
+exports.addUser = name =&gt; …
+</code></pre>
+<pre><code class="lang-js"><span class="hljs-comment">// on remplace le client par un faux</span>
+<span class="hljs-keyword">const</span> sinon = <span class="hljs-built_in">require</span>(<span class="hljs-string">'sinon'</span>)
+<span class="hljs-keyword">const</span> client = {
+  insert: sinon.stub().returns(<span class="hljs-built_in">Promise</span>.resolve({ id: <span class="hljs-number">42</span> }))
+}
+
+<span class="hljs-comment">// on injecte cette dépendance</span>
+<span class="hljs-keyword">const</span> proxyquire = <span class="hljs-built_in">require</span>(<span class="hljs-string">'proxyquire'</span>)
+<span class="hljs-keyword">const</span> mod = proxyquire(<span class="hljs-string">'../module-a-tester'</span>, {
+  <span class="hljs-string">'./db'</span>: client
+})
+
+<span class="hljs-comment">// on peut tester</span>
+expect(mod.addUser(<span class="hljs-string">'toto'</span>)).to.eventually.have.property(<span class="hljs-string">'id'</span>, <span class="hljs-number">42</span>)
+expect(client.insert.insert).to.equal(<span class="hljs-literal">true</span>)
+</code></pre>
+</section>
+<section id="tests-unitaires-es-modules-run" class="slide">
+<h2>ES Modules</h2><h3>Problème 1 : exécution des tests</h3><ul>
+<li>Le plus simple : <code>esm</code></li>
+</ul>
+<pre><code class="lang-sh">npm add esm
+mocha -r esm
+<span class="hljs-comment"># Note: '"esm": "all"' peut être nécessaire dans le package.json</span>
+</code></pre>
+<ul>
+<li>Pour garder le mode natif, <a href="https://github.com/mochajs/mocha/issues/3006#issuecomment-406897900">il faut bidouiller un peu</a><ul>
+<li>Flag passé avec <code>NODE_OPTIONS</code></li>
+<li>Mocha ne charge que les <code>.js</code>, donc il faut écrire son propre point d&#39;entrée chargeant les <code>.mjs</code></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-unitaires-es-modules-mock" class="slide">
+<h2>ES Modules</h2><h3>Problème 2 : mocks</h3><ul>
+<li>Par nature les modules natifs ne sont pas &quot;mockables&quot;</li>
+<li>Utiliser l&#39;injection de dépendance</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> foo <span class="hljs-keyword">from</span> <span class="hljs-string">'./foo'</span>;
+<span class="hljs-comment">// Can't mock 'foo'</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> value =&gt; foo(value);
+<span class="hljs-comment">// Can inject a mock: bar(value, myFoo)</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (value, _foo = foo) =&gt; _foo(value);
+<span class="hljs-comment">// A bit trickier but nicer when multiple deps: bar(value, { foo: myFoo })</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> (value, { foo: _foo = foo } = {}) =&gt; _foo(value);
+</code></pre>
+<ul>
+<li>Autre option : passer par <code>babel</code><ul>
+<li><a href="https://medium.com/@norbertbraun/my-node-js-setup-mocha-chai-babel7-es6-7ee56f6d33d7">Node.js setup : mocha/chai/babel7/es6</a></li>
+<li><a href="https://www.npmjs.com/package/babel-plugin-rewire">babel-plugin-rewire</a></li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-sh">npm add babel-plugin-rewire @babel/preset-env
+mocha --compilers js:@babel/register --plugins rewire --presets env
+</code></pre>
+</section>
+<section id="tests-unitaires-tests-db" class="slide">
+<h2>Tests et bases de données</h2><p>Penser à préparer ses données de test : <code>before</code>, <code>beforeEach</code></p>
+<pre><code class="lang-js">define(<span class="hljs-string">'my feature'</span>, () =&gt; {
+  before(cb =&gt; loadFixtures(cb)) <span class="hljs-comment">// or return a promise</span>
+  <span class="hljs-comment">// shorter: before(loadFixtures)</span>
+})
+</code></pre>
+<p>Faire le ménage en partant</p>
+<pre><code class="lang-js">after(cb =&gt; cleanData(cb)) <span class="hljs-comment">// or return a promise</span>
+<span class="hljs-comment">// shorter: after(cleanData)</span>
+</code></pre>
+<p><strong class="fragment">On a <strong>vraiment</strong> pas envie de cibler la BDD de prod</strong> <span class="fragment"><br>→ <a href="https://www.npmjs.com/package/env-test"><code>env-test</code></a> + <a href="https://mochajs.org/#mochaopts"><code>mocha.opts</code></a></span></p>
+</section>
+</section>
+<section>
+<section id="configuration" class="slide cover"><h1>Configuration</h1></section><section id="configuration-environment" class="slide">
+<h2>Environnements</h2><p>Le standard <em>de facto</em> : variable d&#39;environnement <strong><code>NODE_ENV</code></strong>.</p>
+<p>Valeurs usuelles : <code>development</code> ou <code>production</code>.</p>
+<pre><code class="lang-sh">NODE_ENV=<span class="hljs-string">"development"</span> node <span class="hljs-string">"server.js"</span>
+</code></pre>
+<p>Dans le script Node :</p>
+<pre><code class="lang-js">process.env.NODE_ENV
+
+<span class="hljs-comment">// Express</span>
+app.get(<span class="hljs-string">"env"</span>)
+</code></pre>
+<ul>
+<li>Express : comportements spécifiques si <code>production</code><ul>
+<li>ATTENTION : par défaut = <code>development</code></li>
+</ul>
+</li>
+<li><strong>Idée</strong> : configuration fonction de l&#39;environnement</li>
+</ul><aside class="notes"><ul>
+<li>Utiliser <code>cross-env</code> dans les scripts npm pour la compatibilité
+*</li>
+</ul></aside>
+</section>
+<section id="configuration-json" class="slide">
+<h2>Modules JSON</h2><p><code>require</code> comprend le JSON automatiquement</p>
+<pre><code class="lang-js"><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./config/config.json"</span>);
+</code></pre>
+<h3>Configuration dépendant de l&#39;environnement</h3><pre><code class="lang-js"><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./config/config-"</span> + process.env.NODE_ENV + <span class="hljs-string">".json"</span>);
+</code></pre>
+<h3>Environnement + valeurs par défaut</h3><pre><code class="lang-js"><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">Object</span>.assign({},
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config/defaults.json'</span>),
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">`./config/<span class="hljs-subst">${process.env.NODE_ENV}</span>.json`</span>)
+)
+</code></pre>
+</section>
+<section id="configuration-config" class="slide">
+<h2>Aller plus loin</h2><p>Le module <a href="https://github.com/lorenwest/node-config"><code>config</code></a> : <em>convention over configuration</em></p>
+<ul>
+<li>Configuration accessible partout : <code>require(&#39;config&#39;)</code></li>
+<li><a href="https://github.com/lorenwest/node-config/wiki/Configuration-Files#file-formats">Gère de multiples formats</a></li>
+<li><a href="https://github.com/lorenwest/node-config/wiki/Configuration-Files#file-load-order">Surcharge à plusieurs niveaux</a></li>
+</ul>
+<pre><code>config/
+  default.json     # Options par <span class="hljs-keyword">d</span>éfaut
+  development.yml  # Environnement <span class="hljs-keyword">de</span> <span class="hljs-keyword">d</span>éveloppement
+  production.yml   # Environnement <span class="hljs-keyword">de</span> production
+  <span class="hljs-keyword">test</span>.yml         # npm <span class="hljs-keyword">test</span>
+  <span class="hljs-keyword">local</span>.ini        # Non versionné<span class="hljs-keyword">e</span>: configuration du host
+</code></pre><p>Surcharge par <a href="https://github.com/lorenwest/node-config/wiki/Environment-Variables#custom-environment-variables">variables d&#39;environnement</a> ou <a href="https://github.com/lorenwest/node-config/wiki/Command-Line-Overrides">ligne de commande</a>… La totale !</p>
+</section>
+</section>
+<section>
+<section id="websockets" class="slide cover"><h1>WebSockets</h1></section><section id="websockets-websockets" class="slide">
+<h2>Les WebSockets</h2><ul>
+<li>&quot;Temps réel&quot;</li>
+<li>Full-duplex (requêtes &amp; réponses se croisent)</li>
+<li>Protocole basé sur HTTP</li>
+</ul>
+<pre><code><span class="hljs-attribute">Connection</span>: <span class="hljs-string">Upgrade</span>
+<span class="hljs-attribute">Upgrade</span>: <span class="hljs-string">websocket</span>
+</code></pre><p><a href="http://caniuse.com/websocket">Excellent support navigateur</a> <span class="fragment">(IE ≥ 10, Android ≥ 4.4)</span></p>
+<p><span class="fragment">Mais attention aux proxies !</span></p>
+</section>
+<section id="websockets-websockets-schema" class="slide">
+<h2>Les WebSockets</h2><p><img src="images/websockets.png" height="500" style="border:none"></p>
+</section>
+<section id="websockets-api-dom" class="slide">
+<h2>Client WebSocket : <a href="https://developer.mozilla.org/fr/docs/Web/API/WebSocket">l&#39;API DOM</a></h2><pre><code class="lang-js"><span class="hljs-keyword">var</span> socket = <span class="hljs-keyword">new</span> WebSocket(<span class="hljs-string">'ws://url'</span>);
+
+socket.send(<span class="hljs-string">'some data'</span>);
+
+socket.addEventListener(<span class="hljs-string">'message'</span>, (event) =&gt; {
+  <span class="hljs-built_in">console</span>.log(event.data); <span class="hljs-comment">// string</span>
+})
+</code></pre>
+<ul>
+<li>pas de distinction des messages (simples strings)</li>
+<li>événement &quot;open&quot;, &quot;message&quot;, &quot;close&quot; et basta</li>
+<li>un peu limité…</li>
+</ul>
+</section>
+<section id="websockets-node-client" class="slide">
+<h2>Client WebSocket : côté Node</h2><p>Via <a href="https://github.com/websockets/ws">ws</a> ou <a href="https://github.com/uNetworking/uWebSockets">uws<strong>@10.148.1</strong></a> (<a href="https://github.com/charlieduong94/uws-vs-ws-benchmark">normalement plus performant</a>)</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> WebSocket = <span class="hljs-built_in">require</span>(<span class="hljs-string">'uws'</span>) <span class="hljs-comment">// or ws</span>
+
+socket.send(<span class="hljs-string">'some data'</span>)
+
+socket.on(<span class="hljs-string">'message'</span>, event =&gt; {
+  <span class="hljs-built_in">console</span>.log(event.data) <span class="hljs-comment">// string</span>
+})
+</code></pre>
+<ul>
+<li>Peut aussi servir à implémenter un serveur WebSocket</li>
+</ul>
+</section>
+<section id="websockets-socket-io" class="slide" data-background="images/socket.io.png" data-background-size="400px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>Socket.io à la rescousse !</h2><p>API de messaging basée sur <code>EventEmitter</code></p>
+<pre><code class="lang-js">io.on(<span class="hljs-string">"connection"</span>, (socket) =&gt; {
+
+  socket.emit(<span class="hljs-string">"hello"</span>, ...args);
+
+  socket.on(<span class="hljs-string">"hello-response"</span>, (...args) =&gt; { <span class="hljs-comment">/* … */</span> });
+
+});
+</code></pre>
+<p>Multiples transports si <em>WebSocket</em> ne passe pas :</p>
+<ul>
+<li>Ajax Long Polling</li>
+<li>WebSocket</li>
+<li>On garde le long polling si WS ne marche pas</li>
+</ul><aside class="notes"><h2>TP</h2><p>Intégrer socket.io dans l&#39;application, d&#39;abord tout dans <code>server.js</code> puis externaliser dans un module à part (on peut par exemple utiliser le singleton pour pouvoir lancer <code>io.emit()</code> depuis une route Express) :</p>
+<pre><code class="lang-js"><span class="hljs-comment">// lib/websocket.js</span>
+<span class="hljs-keyword">const</span> socketio = <span class="hljs-built_in">require</span>(<span class="hljs-string">"socket.io"</span>)
+
+exports.io = <span class="hljs-literal">null</span>
+
+exports.init = (server) =&gt; {
+  <span class="hljs-keyword">if</span> (exports.io !== <span class="hljs-literal">null</span>) {
+    <span class="hljs-keyword">throw</span> …
+  }
+
+  <span class="hljs-keyword">return</span> exports.io = socketio(server)
+}
+</code></pre></aside>
+</section>
+<section id="websockets-app-temps-reel" class="slide">
+<h2>Du temps réel dans son application</h2><h3>Réduire le lag</h3><ul>
+<li>Requête HTTP = headers + body</li>
+<li>Message WebSocket = seulement le message</li>
+</ul>
+<h3>Notifications</h3><ul>
+<li>Recevoir des événements du serveur</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// Broadcast</span>
+io.emit(<span class="hljs-string">"flash-news"</span>);
+</code></pre><aside class="notes"><h2>TP</h2><p>Remplacer les intéraction HTTP par du websocket</p>
+<pre><code class="lang-js"><span class="hljs-comment">// server</span>
+socket.on(<span class="hljs-string">"click"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>) </span>{
+  <span class="hljs-comment">// check if good position</span>
+  io.emit(<span class="hljs-string">"winner"</span>, <span class="hljs-string">"username???"</span>);
+  <span class="hljs-comment">// next game soon</span>
+  setTimeout( … io.emit(<span class="hljs-string">"game"</span>, x, y, w, h) … );
+});
+
+<span class="hljs-comment">// client</span>
+socket.on(<span class="hljs-string">"winner"</span>, …)
+socket.on(<span class="hljs-string">"game"</span>, …)
+</code></pre>
+<p><strong>Où récupérer le username ?</strong></p></aside>
+</section>
+<section id="websockets-rooms-et-namespaces" class="slide">
+<h2>Socket.io : rooms &amp; namespaces</h2><h3>Regrouper les sockets avec les rooms</h3><pre><code class="lang-js">socket.join(<span class="hljs-string">"private"</span>);
+
+io.to(<span class="hljs-string">"private"</span>).emit(<span class="hljs-string">"event"</span>);
+</code></pre>
+<h3>Séparer les services avec les namespaces</h3><pre><code class="lang-js"><span class="hljs-comment">// server</span>
+io.of(<span class="hljs-string">"/chat"</span>).on(<span class="hljs-string">"connection"</span>, …);
+io.of(<span class="hljs-string">"/news"</span>).on(<span class="hljs-string">"connection"</span>, …);
+
+<span class="hljs-comment">// client</span>
+<span class="hljs-keyword">const</span> chatSocket = io.connect(<span class="hljs-string">"…/chat"</span>);
+<span class="hljs-keyword">const</span> newsSocket = io.connect(<span class="hljs-string">"…/news"</span>);
+</code></pre><aside class="notes"><h3>Room + écoute</h3><pre><code class="lang-js">io.to(<span class="hljs-string">"private"</span>).on(<span class="hljs-string">"event"</span>, …);
+</code></pre>
+<p><strong>ATTENTION les appels à <code>to</code> s&#39;empilent !</strong> (c&#39;est <code>emit</code> qui flush)</p>
+<pre><code class="lang-js">io.to(<span class="hljs-string">"room1"</span>).on(<span class="hljs-string">"event1"</span>, …);
+
+<span class="hljs-comment">// broadcast to room1 + room2!</span>
+io.to(<span class="hljs-string">"room2"</span>).emit(<span class="hljs-string">"event2"</span>);
+</code></pre>
+<p>Solution :</p>
+<pre><code class="lang-js">io.rooms = [];
+</code></pre></aside>
+</section>
+<section id="websockets-authentification" class="slide">
+<h2>Phase d&#39;authentification</h2><p>Filtrer les connexions avec les <em>middlewares</em></p>
+<pre><code class="lang-js">io.use((socket, next) =&gt; {
+  next(error) <span class="hljs-comment">// refuse connection</span>
+})
+</code></pre>
+<p>À l&#39;origine une requête HTTP, qui reste disponible :</p>
+<pre><code class="lang-js">socket.request
+socket.request.headers
+<span class="hljs-comment">// etc…</span>
+
+<span class="hljs-comment">// addition:</span>
+socket.request.res <span class="hljs-comment">// http://git.io/Fz1y</span>
+</code></pre>
+</section>
+<section id="websockets-couplage-express" class="slide">
+<h2>Couplage avec Express</h2><h3>HTTP ≠ WebSocket</h3><p>Dans un handler Express on n&#39;a aucun lien avec le socket</p>
+<h3>Établir le lien : la session</h3><p>Handshaking → HTTP → headers → cookies → session</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> sessionMiddleware = expressSession(…)
+app.use(sessionMiddleware)
+
+<span class="hljs-comment">// …</span>
+
+io.use((socket, next) =&gt; {
+  sessionMiddleware(socket.request, socket.request.res, next);
+  <span class="hljs-comment">// socket.request.session = user's session</span>
+})
+</code></pre>
+</section>
+</section>
+<section>
+<section id="qualite" class="slide cover"><h1>Qualité</h1></section><section id="qualite-code-quality" class="slide">
+<h2>La qualité</h2><ul>
+<li>fonctionnalité, expérience utilisateur…</li>
+<li>fiabilité (<strong>tests unitaires</strong>, <strong>debugging</strong>, <strong>intégration continue</strong>)</li>
+<li>performances (<strong>profiling</strong>)</li>
+<li>maintenabilité (<strong>formatage</strong>)</li>
+<li>portabilité assurée par Node</li>
+</ul>
+</section>
+<section id="qualite-debugging" class="slide">
+<h2>Debugging avec les Chrome DevTools</h2><h3>Node ≥ 6.3 : <a href="https://github.com/nodejs/node/pull/6792"><code>node --inspect</code></a></h3><pre><code class="lang-sh">node --inspect [--debug-brk] server.js
+</code></pre>
+<ul>
+<li>Copier-coller l&#39;URL dans Chrome</li>
+<li><a href="https://blog.hospodarets.com/nodejs-debugging-in-chrome-devtools">Encore plus fort si Chrome ≥ 55</a></li>
+</ul>
+<h3>Node ≤ 6.3 : <code>node-inspector</code></h3><pre><code class="lang-sh">npm install -g node-inspector
+node-debug server.js
+</code></pre>
+</section>
+<section id="qualite-profiling" class="slide">
+<h2>Profiling</h2><h3>Avec les Chrome DevTools</h3><ul>
+<li>Node ≤ 6.4.0 : <code>node-inspector</code></li>
+<li>Node ≥ 6.9.0 : <code>node --inspect</code></li>
+<li>Entre les deux, désolé</li>
+</ul>
+<p>Onglet <em>Profiles</em> des dev-tools : Profiling CPU, Heap Snapshot, Allocations over time…</p>
+<h3>En ligne de commande</h3><p><a href="https://nodejs.org/en/docs/guides/simple-profiling/"><code>node --prof</code> et <code>node --prof-process</code></a></p>
+</section>
+<section id="qualite-formatting-eslint" class="slide">
+<h2>Formatage</h2><p><a href="http://eslint.org/"><code>eslint</code></a></p>
+<ul>
+<li><a href="http://eslint.org/docs/rules/">Configurable</a> (contrairement à <code>jslint</code>)</li>
+<li><a href="http://eslint.org/docs/developer-guide/working-with-rules">Extensible</a> (plus que <code>jshint</code>)</li>
+<li>Règles sémantiques ou de style</li>
+<li>Peut reformater le code avec <code>eslint --fix</code></li>
+</ul>
+<pre><code class="lang-sh">npm add --save-dev eslint
+npx eslint init
+npx eslint .
+<span class="hljs-comment"># Ajouter aux scripts npm : "eslint ."</span>
+</code></pre>
+<p><code>no-unused-var</code>, <code>no-undef</code>, <a href="https://github.com/benmosher/eslint-plugin-import/blob/HEAD/docs/rules/no-extraneous-dependencies.md"><code>import/no-extraneous-dependencies</code></a>, <code>prefer-arrow-callback</code>, <code>no-var</code>, <code>prefer-const</code>, <code>prefer-rest-params</code>…</p>
+</section>
+<section id="qualite-formatting-prettier" class="slide">
+<h2>Formatage</h2><p><a href="https://github.com/prettier/prettier"><code>prettier</code></a> pour JS/JSX/TS/CSS/MD…</p>
+<ul>
+<li>« <em>Prettier is an <strong>opinionated</strong> code formatter</em> »</li>
+<li><a href="https://prettier.io/docs/en/options.html">Quelques options</a> quand-même : tabulations, point-virgule, guillemets…</li>
+<li>Pas de validation mais une réécriture<ul>
+<li>à brancher sur le ctrl+s ou un hook precommit</li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-sh">npm add --save-dev prettier
+npx prettier --use-tabs --no-semi --single-quote --trailing-comma es5 .
+</code></pre>
+<ul>
+<li>Avec eslint : <a href="https://github.com/prettier/eslint-plugin-prettier"><code>prettier/prettier</code></a></li>
+<li>Pour marier les deux : <a href="https://github.com/prettier/prettier-eslint">prettier-eslint</a> + <a href="https://github.com/prettier/prettier-eslint-cli">prettier-eslint-cli</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="performances" class="slide cover"><h1>Performances</h1></section><section id="performances-scalability" class="slide">
+<h2>Scalabilité</h2><p><img src="images/horizontal-vertical-scalability.jpg" height="500"></p><aside class="notes"><h3>Vertical</h3><ul>
+<li>Augmenter la RAM</li>
+<li>Augmenter la puissance CPU :<ul>
+<li>Horloge : limité</li>
+<li>Nombre de cœurs : mono-threadé :(</li>
+</ul>
+</li>
+</ul>
+<h3>Horizontal</h3><ul>
+<li>Multiplier les instances</li>
+<li>Nécessite une application &quot;scalable&quot;</li>
+</ul></aside>
+</section>
+<section id="performances-cluster" class="slide">
+<h2>Cluster</h2><p>Profiter des multiples cœurs du CPU :</p>
+<ul>
+<li><a href="https://nodejs.org/docs/latest/api/cluster.html"><code>cluster</code></a> (module natif)</li>
+<li><a href="https://github.com/bevacqua/lipstick"><code>lipstick</code></a> (sticky session, requis pour socket.io)</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-comment">// server.js (worker)</span>
+<span class="hljs-comment">// avant : server.listen(3000, () =&gt; …)</span>
+<span class="hljs-comment">// après :</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'lipstick'</span>).listen(server, <span class="hljs-number">3000</span>, () =&gt; …)
+
+<span class="hljs-comment">// cluster.js (master)</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'lipstick'</span>)(<span class="hljs-string">'./server.js'</span>, { port: <span class="hljs-number">3000</span> })
+</code></pre>
+<p>Mettre plusieurs machines en cluster :</p>
+<ul>
+<li>Nginx</li>
+<li>HAProxy</li>
+</ul>
+</section>
+<section id="performances-cluster-issues" class="slide">
+<h2>Ça scale pas !</h2><p>Mémoire non partagée : <strong>attention aux états globaux</strong></p>
+<blockquote>
+<p>Mais je n&#39;ai pas de variables globales !</p>
+</blockquote>
+<p><em>Ah oui ?</em></p>
+<ul>
+  <li class=fragment>Sessions ?</li>
+  <li class=fragment>Liste des sockets connectés ?</li>
+  <li class=fragment>D&#39;autres états cachés ?</li>
+</ul><aside class="notes"><ul>
+<li>Doc: <a href="https://github.com/elad/node-cluster-socket.io">https://github.com/elad/node-cluster-socket.io</a></li>
+<li>Implementation: <a href="https://github.com/bevacqua/lipstick">https://github.com/bevacqua/lipstick</a></li>
+</ul></aside>
+</section>
+<section id="performances-redis-session" class="slide">
+<h2>Sessions ? Redis.</h2><p>Synchroniser les données : <strong>base de données</strong></p>
+<h3>Redis en tant que base de données ultra-rapide</h3><pre><code class="lang-js"><span class="hljs-keyword">var</span> session = <span class="hljs-built_in">require</span>(<span class="hljs-string">"express-session"</span>);
+<span class="hljs-keyword">var</span> RedisStore = <span class="hljs-built_in">require</span>(<span class="hljs-string">"connect-redis"</span>)(session);
+
+app.use(session({
+    store: <span class="hljs-keyword">new</span> RedisStore(options),
+    secret: <span class="hljs-string">"…"</span>
+}));
+</code></pre>
+</section>
+<section id="performances-redis-socket-io" class="slide">
+<h2>socket.io ? Redis !</h2><p>Synchroniser les états : <strong>PUB/SUB</strong></p>
+<h3>Redis en tant que serveur PUB/SUB léger</h3><pre><code class="lang-sh">SUBSCRIBE <span class="hljs-string">"channel"</span> <span class="hljs-comment"># client 1</span>
+SUBSCRIBE <span class="hljs-string">"channel"</span> <span class="hljs-comment"># client 2</span>
+
+PUBLISH <span class="hljs-string">"channel"</span> <span class="hljs-string">"hello"</span>
+</code></pre>
+<p>Adaptateur dédié à socket.io (stockage + PUB/SUB)</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> ioRedis = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io-redis'</span>);
+
+io.adapter(ioRedis({
+  <span class="hljs-string">"host"</span>: <span class="hljs-string">"localhost"</span>,
+  <span class="hljs-string">"port"</span>: <span class="hljs-number">6379</span>
+}));
+</code></pre>
+</section>
+<section id="performances-redis-everything" class="slide">
+<h2>Anything ? Redis \o/</h2><p>On l&#39;a déjà vu : c&#39;est la boite à outils de la scalabilité.</p>
+<ul>
+<li><strong>Synchroniser des états</strong> : <code>PUBLISH</code>/<code>SUBSCRIBE</code></li>
+<li><strong>Déléguer des calculs</strong> : <code>RPUSH</code>/<code>BLPOP</code></li>
+<li><strong>Données volatiles</strong> : <code>EXPIRES</code></li>
+<li><strong>Données souvent accédées</strong> : Ultra-rapide</li>
+<li>Beaucoup de données : Nope (la RAM c&#39;est cher)</li>
+</ul>
+</section>
+<section id="performances-memleaks" class="slide">
+<h2>Gestion de la mémoire</h2><ul>
+<li>Profiler la mémoire</li>
+<li>Limiter la <em>heap</em> (<code>Buffer</code>)</li>
+<li>Éviter les <em>memory leak</em><ul>
+<li>Gaffe aux <a href="http://www.jongleberry.com/understanding-possible-eventemitter-leaks.html"><strong><code>EventEmitter</code></strong></a></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="conclusion" class="slide cover"><h1>Conclusion</h1></section><section id="conclusion-best-practices" class="slide" data-background="images/doing-it-right.jpg" data-background-size="300px" data-background-repeat="no-repeat" data-background-position="top right">
+<h2>Bonnes pratiques</h2><ul>
+<li>Éviter la <strong>Pyramid of Doom</strong><ul>
+<li>flow control, Promise…</li>
+</ul>
+</li>
+<li>Écrire du code <strong>scalable</strong><ul>
+<li>Pas de variables globales</li>
+<li>Redis</li>
+</ul>
+</li>
+<li>Surveiller les <strong>performances</strong></li>
+<li>Bien packager son application<ul>
+<li><code>{&quot;private&quot;: true}</code></li>
+</ul>
+</li>
+<li><strong>Ne pas réinventer la roue !</strong></li>
+</ul>
+</section>
+<section id="conclusion-node-when" class="slide">
+<h2>Quand choisir Node ?</h2><p>Node peut tout faire</p>
+<p><img src="images/god.jpg" alt=""></p>
+</section>
+<section id="conclusion-node-when-not" class="slide">
+<h2>Quand ne pas choisir Node ?</h2><ul>
+<li>On n&#39;est pas à l&#39;aise avec JavaScript</li>
+<li>On a des calculs &quot;lourds&quot; qu&#39;on ne peut pas déporter</li>
+</ul>
+<p><img src="images/turing-complete.jpg" alt=""></p>
+</section>
+<section id="conclusion-links" class="slide">
+<ul>
+<li><a href="http://nodejs.org/api">nodejs.org/api</a></li>
+<li><a href="https://www.npms.io">npms.io</a></li>
+<li><a href="http://expressjs.com/en/guide/database-integration.html">expressjs.com/…/database-integration</a></li>
+<li><a href="http://redis.io/commands">redis.io/commands</a></li>
+<li><a href="http://www.echojs.com">echojs.com</a></li>
+<li><a href="https://www.reddit.com/r/javascript">reddit.com/r/javascript</a></li>
+<li><a href="https://github.com/sindresorhus/awesome-nodejs">github.com/sindresorhus/awesome-nodejs</a></li>
+<li><a href="https://github.com/byteclubfr">github.com/byteclubfr</a></li>
+<li><a href="http://putaindecode.io/fr/evenements/2015/calendrier-avent/">articles ES6 fr</a></li>
+<li><a href="https://blog.risingstack.com/controlling-node-js-security-risk-npm-dependencies/">Controlling the Node.js security risk of npm dependencies</a></li>
+<li><a href="http://byteclub.fr/blog/this.html">C&#39;est quoi this</a></li>
+</ul>
+<p><span class="fragment">Plus tous les liens disséminés dans les slides
+<br>(paf, obligé de les relire)</span></p>
+</section>
+</section>
+<section id="goodbye" class="cleartext slide" data-background="images/nodejs.png">
+<h2>À bientôt !</h2><p>@naholyr | @Delapouite | @t8g</p>
+</section></div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      history: true,
+      center: true,
+
+      transition: Reveal.getQueryHash().transition || 'slide', // none/fade/slide/convex/concave/zoom
+
+      // Optional reveal.js plugins
+      dependencies: [
+        //{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        //{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        //{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'plugin/zoom-js/zoom.js', async: true },
+        { src: 'plugin/notes/notes.js', async: true }
+      ]
+    });
+    </script>
+
+    <script src="js/dynamic-theme.js"></script><script src="js/such-notes-print.js"></script><script src="js/config.js"></script>
+
+  </body>
+</html>
