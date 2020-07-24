@@ -33,7 +33,11 @@
 .Players .Player em,
 .Players .Player code {
   display: table-cell;
-  padding: 0.5rem;
+  padding: 0.25rem;
+  white-space: nowrap;
+}
+.Players .Player code {
+  font-size: 2rem;
 }
 
 .Grid {

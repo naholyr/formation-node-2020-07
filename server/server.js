@@ -1,23 +1,24 @@
-'use strict'
+"use strict";
 
 // GET /fibo/{n} => JSON { input: n, output: fibo(n) }
 
 const express = require("express");
 const fibo = require("./lib/fibo.js");
-const bodyParser = require('body-parser');
-const { check_user } = require('./lib/db.js');
-require('./lib/db')
+const bodyParser = require("body-parser");
+const { check_user } = require("./lib/db.js");
 
 const app = express();
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
-app.get("/fibo/:n(\d+)", (req, res) => {
+app.get("/fibo/:n(\\d+)", (req, res) => {
   let n = Number(req.params.n);
   if (isNaN(n)) {
     return res.status(400).send("Not a number");
@@ -25,18 +26,29 @@ app.get("/fibo/:n(\d+)", (req, res) => {
 
   let result = fibo.slowFibo(n);
   res.send({ n, result });
-})
+});
 
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const ok = await check_user(req.body.username, req.body.password);
     if (ok) {
-      res.send({ username: req.body.username, token: 'TODO' });
+      const grid = Array(25).fill(""); // TODO from DB
+      const players = [{ username: "John Doe", score: 7 }]; // TODO from DB
+      const currentPlayer = "John Doe";
+      res.send({
+        username: req.body.username,
+        token: "TODO",
+        grid,
+        players,
+        currentPlayer,
+      });
     } else {
-      res.status(403).send({ message: 'Authentication failed', code: 'AUTH_FAIL' });
+      res
+        .status(403)
+        .send({ message: "Authentication failed", code: "AUTH_FAIL" });
     }
   } catch (err) {
-    res.status(500).send({ message: err.message, code: 'UNEXPECTED' });
+    res.status(500).send({ message: err.message, code: "UNEXPECTED" });
   }
 });
 
