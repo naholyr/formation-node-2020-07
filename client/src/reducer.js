@@ -43,7 +43,7 @@ export const reducer = (state = initialState, action) => {
           // … use already set value or …
           state.currentPlayer ||
           // … initialize from list of players
-          action.payload.players[0].username,
+          (action.payload.players[0] && action.payload.players[0].username),
       };
     case "SET_GRID":
       return { ...state, grid: action.payload };

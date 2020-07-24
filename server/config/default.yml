@@ -1,0 +1,8 @@
+# cf. https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options
+redis:
+  host: "127.0.0.1"
+  port: 6379
+
+token:
+  secret: "AZK90E8JQ0Z9MD°09K09KEMO1PI2MOPI"
+  expiresIn: "24h"

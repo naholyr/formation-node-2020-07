@@ -5,7 +5,18 @@
 const express = require("express");
 const fibo = require("./lib/fibo.js");
 const bodyParser = require("body-parser");
-const { check_user } = require("./lib/db.js");
+const {
+  check_user,
+  get_grid,
+  get_current_player,
+  get_players,
+} = require("./lib/db.js");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const initWebSocket = require("./lib/websocket-server");
+
+const secret = config.token.secret;
+const tokenExpiration = config.token.expiresIn;
 
 const app = express();
 
@@ -30,14 +41,52 @@ app.get("/fibo/:n(\\d+)", (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const ok = await check_user(req.body.username, req.body.password);
-    if (ok) {
-      const grid = Array(25).fill(""); // TODO from DB
-      const players = [{ username: "John Doe", score: 7 }]; // TODO from DB
-      const currentPlayer = "John Doe";
+    // username of verified user
+    let loggedUsername;
+
+    const { username, password, token } = req.body;
+    if (username && password) {
+      // Login by username/password
+      if (await check_user(req.body.username, req.body.password)) {
+        loggedUsername = req.body.username;
+      } else {
+        return res
+          .status(403)
+          .send({ message: "Invalid login/password", code: "AUTH_FAIL" });
+      }
+    } else if (token) {
+      // Login by token
+      try {
+        const decoded = jwt.verify(token, secret);
+        console.log(decoded);
+        loggedUsername = decoded.username;
+      } catch (err) {
+        // Invalid token
+        return res.status(403).send({ message: err.message, code: err.code });
+      }
+    } else {
+      // Invalid query body
+      return res
+        .status(400)
+        .send({ message: "Invalid input", code: "BAD_REQUEST" });
+    }
+
+    console.log({ loggedUsername });
+
+    if (loggedUsername) {
+      // User found (by login/password or token, whatever)
+      const [grid, players, currentPlayer] = await Promise.all([
+        get_grid(),
+        get_players(),
+        get_current_player(),
+      ]);
+      // Generate a new fresh token
+      const token = jwt.sign({ username: loggedUsername }, secret, {
+        expiresIn: tokenExpiration,
+      });
       res.send({
-        username: req.body.username,
-        token: "TODO",
+        username: loggedUsername,
+        token,
         grid,
         players,
         currentPlayer,
@@ -52,6 +101,9 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
+  // eslint-disable-next-line no-console
   console.log("Go to http://localhost:3000/fibo/12");
 });
+
+initWebSocket(server);
